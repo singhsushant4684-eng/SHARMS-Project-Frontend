@@ -374,29 +374,88 @@ function initCharts() {
   }
 
   // Energy Breakdown Chart
+  // Modernized Multi-Room Energy Chart (Sunset Amber Theme)
   const energyCanvas = document.getElementById('energyChart');
   if (energyCanvas) {
     const ctxEnergy = energyCanvas.getContext('2d');
+
+    const roomColors = {
+      'Living Room': { bg: 'rgba(217, 119, 6, 0.85)', border: '#d97706' },  // Sunset Amber
+      'Bedroom':     { bg: 'rgba(245, 158, 11, 0.75)', border: '#f59e0b' },  // Amber Accent
+      'Entrance':    { bg: 'rgba(16, 185, 129, 0.75)', border: '#10b981' },  // Emerald
+      'Kitchen':     { bg: 'rgba(99, 102, 241, 0.75)', border: '#6366f1' }   // Indigo
+    };
+
     new Chart(ctxEnergy, {
       type: 'bar',
       data: {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-          label: 'Living Room',
-          data: [4.2, 5.1, 3.8, 4.5, 5.0, 6.2, 5.8],
-          backgroundColor: '#4f46e5'
-        }, {
-          label: 'Bedroom',
-          data: [2.1, 2.5, 2.0, 2.3, 2.8, 3.4, 3.1],
-          backgroundColor: '#38bdf8'
-        }]
+        datasets: [
+          {
+            label: 'Living Room',
+            data: [4.2, 5.1, 3.8, 4.5, 5.0, 6.2, 5.8],
+            backgroundColor: roomColors['Living Room'].bg,
+            borderColor: roomColors['Living Room'].border,
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            label: 'Bedroom',
+            data: [2.1, 2.5, 2.0, 2.3, 2.8, 3.4, 3.1],
+            backgroundColor: roomColors['Bedroom'].bg,
+            borderColor: roomColors['Bedroom'].border,
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            label: 'Entrance',
+            data: [0.8, 0.9, 0.7, 1.0, 1.2, 1.5, 1.1],
+            backgroundColor: roomColors['Entrance'].bg,
+            borderColor: roomColors['Entrance'].border,
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            label: 'Kitchen',
+            data: [3.5, 4.0, 3.2, 3.9, 4.6, 5.2, 4.8],
+            backgroundColor: roomColors['Kitchen'].bg,
+            borderColor: roomColors['Kitchen'].border,
+            borderWidth: 1,
+            borderRadius: 6
+          }
+        ]
       },
       options: {
         responsive: true,
-        plugins: { legend: { labels: { color: '#94a3b8' } } },
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 12 },
+              usePointStyle: true,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            titleColor: '#f8fafc',
+            bodyColor: '#cbd5e1',
+            borderColor: 'rgba(217, 119, 6, 0.3)',
+            borderWidth: 1,
+            padding: 12
+          }
+        },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+          x: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#64748b' }
+          },
+          y: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#64748b', callback: v => `${v} kWh` }
+          }
         }
       }
     });

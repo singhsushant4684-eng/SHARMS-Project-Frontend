@@ -338,19 +338,41 @@
         </section>
 
         <!-- VIEW 3: RESOURCE USAGE -->
-        <section id="view-resources" class="hidden">
-          <div class="section-header">
-            <div>
-              <h2>Resource Management</h2>
-              <p>Breakdown of weekly power consumption by room.</p>
-            </div>
-          </div>
+    <section id="view-resources" class="hidden">
+      <div class="section-header">
+        <div>
+          <h2>Resource Management</h2>
+          <p>Breakdown of weekly power consumption and efficiency metrics across all registered rooms.</p>
+        </div>
+      </div>
 
-          <div class="chart-container">
-            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Weekly Consumption (kWh)</h3>
-            <canvas id="energyChart" height="100"></canvas>
-          </div>
-        </section>
+      <!-- Quick Summary Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Total Weekly Consumption</span>
+          <span class="metric-value">82.4 <small>kWh</small></span>
+          <span class="metric-trend positive">↓ 4.2% vs last week</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Peak Usage Room</span>
+          <span class="metric-value">Living Room</span>
+          <span class="metric-sub">34.6 kWh (42%)</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Est. Weekly Cost</span>
+          <span class="metric-value">$14.83</span>
+          <span class="metric-sub">Avg $2.11 / day</span>
+        </div>
+      </div>
+
+      <!-- Chart Container -->
+      <div class="chart-card">
+        <h3>Weekly Consumption by Room (kWh)</h3>
+        <div style="height: 300px; position: relative;">
+          <canvas id="energyChart"></canvas>
+        </div>
+      </div>
+    </section>
 
         <!-- VIEW 4: SYSTEM LOGS -->
         <section id="view-alerts" class="hidden">
