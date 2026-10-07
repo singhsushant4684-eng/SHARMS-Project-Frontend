@@ -13,15 +13,47 @@ let chartsInitialized = false;
 // AUTHENTICATION FLOW
 function handleLogin(e) {
   e.preventDefault();
+
+  // 1. Get the typed name/email from the login input
+  const inputEl = document.getElementById('login-email') || document.getElementById('login-username') || document.getElementById('login-fullname');
+  const typedValue = inputEl ? inputEl.value.trim() : 'User';
+
+  // 2. Format name (if user enters "aman@sharms.local", extract "Aman")
+  let displayName = typedValue;
+  if (typedValue.includes('@')) {
+    displayName = typedValue.split('@')[0];
+    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+  }
+
+  // 3. Generate initials (e.g., "Aman" -> "AM", "Aman Kumar" -> "AK")
+  const parts = displayName.split(' ').filter(p => p.length > 0);
+  let initials = 'US';
+  if (parts.length >= 2) {
+    initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  } else if (parts.length === 1) {
+    initials = parts[0].slice(0, 2).toUpperCase();
+  }
+
+  // 4. Dynamically update top-right corner header
+  const userNameEl = document.getElementById('user-name');
+  const userAvatarEl = document.getElementById('user-avatar');
+
+  if (userNameEl) userNameEl.innerText = displayName;
+  if (userAvatarEl) userAvatarEl.innerText = initials;
+
+  // 5. Hide login view & show system view
   document.getElementById('login-view').classList.add('hidden');
   document.getElementById('system-view').classList.remove('hidden');
 
+  // 6. Render devices & initialize charts
   renderDevices();
   if (!chartsInitialized) {
     initCharts();
     chartsInitialized = true;
   }
-  addLog('Admin Auth', 'INFO', 'User Sushant Singh authenticated successfully.');
+
+  // 7. Add audit log entry
+  addLog('Admin Auth', 'INFO', `User ${displayName} authenticated successfully.`);
 }
 
 function handleLogout() {

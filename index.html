@@ -53,38 +53,43 @@
           <p>Smart Home Automation & Resource Management System</p>
         </div>
 
-        <form onsubmit="handleLogin(event)" class="auth-form">
-          <div class="form-group">
-            <label for="login-email">Username or Email</label>
-            <div class="input-wrapper">
-              <span class="input-icon">👤</span>
-              <input type="text" id="login-email" class="form-input with-icon" placeholder="admin@sharms.local" required value="admin@sharms.local">
-            </div>
+        <form onsubmit="handleLogin(event)" class="auth-form" autocomplete="off">
+        <div class="form-group">
+          <label for="login-fullname">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="login-fullname" class="form-input with-icon" placeholder="e.g. Sushant Singh" required autocomplete="off">
           </div>
-          <div class="form-group">
-            <label for="login-password">Password</label>
-            <div class="input-wrapper">
-              <span class="input-icon">🔒</span>
-              <input type="password" id="login-password" class="form-input with-icon" placeholder="••••••••" required value="password123">
-            </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-email">Username or Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input type="text" id="login-email" class="form-input with-icon" placeholder="admin@sharms.local" required autocomplete="off">
           </div>
+        </div>
 
-          <div class="form-options">
-            <label class="checkbox-label">
-              <input type="checkbox" checked> Remember session
-            </label>
-            <a href="#" onclick="alert('Demo Mode: Click Authenticate & Access System to enter.')" class="forgot-link">Forgot key?</a>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="login-password" class="form-input with-icon" placeholder="••••••••" required autocomplete="new-password">
           </div>
+        </div>
 
-          <button type="submit" class="btn-primary auth-btn">
-            <span>Authenticate & Access System</span>
-            <span class="btn-arrow">→</span>
-          </button>
-        </form>
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" checked> Remember session
+          </label>
+          <a href="#" onclick="alert('Demo Mode: Click Authenticate & Access System to enter.')" class="forgot-link">Forgot key?</a>
+        </div>
 
-        <div class="auth-footer">
-          <span><span class="status-dot green"></span> Encrypted Core</span>
-          <span>v2.4 Node</span>
+        <button type="submit" class="btn-primary auth-btn">
+          <span>Authenticate & Access System</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
         </div>
       </div>
     </div>
@@ -101,14 +106,14 @@
           <p class="brand-sub">Smart Home Automation & Resource Management System</p>
         </div>
       </div>
-      <div class="user-badge">
-        <div class="avatar">SS</div>
-        <div>
-          <div class="user-name">Sushant Singh</div>
-          <div class="user-role">System Administrator</div>
-        </div>
-        <button onclick="handleLogout()" class="logout-btn" title="Log Out">🚪</button>
-      </div>
+       <div class="user-badge">
+  <div id="user-avatar" class="avatar">SS</div>
+  <div>
+    <div id="user-name" class="user-name">Sushant Singh</div>
+    <div class="user-role">System Administrator</div>
+  </div>
+  <button onclick="handleLogout()" class="logout-btn" title="Log Out">🚪</button>
+</div>
     </header>
 
     <div class="app-body">
