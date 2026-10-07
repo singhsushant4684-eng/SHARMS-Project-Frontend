@@ -27,25 +27,31 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // AUTHENTICATION FLOW
-// AUTHENTICATION FLOW
 function handleLogin(e) {
   e.preventDefault();
 
-  // 1. Get the typed input
-  const inputEl = document.getElementById('login-email') || document.getElementById('login-username') || document.getElementById('login-fullname');
-  const typedValue = inputEl ? inputEl.value.trim() : '';
+  // 1. Explicitly target the email/username input
+  const emailInput = document.getElementById('login-email');
+  const fullNameInput = document.getElementById('login-fullname');
 
-  // 2. Validate that it ends strictly with @sharms.local
-  if (!typedValue.toLowerCase().endsWith('@sharms.local')) {
-    alert('Access Denied: Username must end with @sharms.local (e.g. aman@sharms.local)');
-    return; // Stop login process
+  const emailValue = emailInput ? emailInput.value.trim() : '';
+  const fullNameValue = fullNameInput ? fullNameInput.value.trim() : '';
+
+  // 2. Validate strict domain suffix on email input
+  if (!emailValue.toLowerCase().endsWith('@sharms.local')) {
+    alert('Access Denied: Email/Username must end with @sharms.local (e.g. admin@sharms.local)');
+    if (emailInput) emailInput.focus();
+    return; // Block login execution
   }
 
-  // 3. Extract display name (e.g., "aman@sharms.local" -> "Aman")
-  let displayName = typedValue.split('@')[0];
-  displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+  // 3. Determine display name (prefer Full Name input if filled, otherwise extract from email)
+  let displayName = fullNameValue;
+  if (!displayName) {
+    let rawName = emailValue.split('@')[0];
+    displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  }
 
-  // 4. Generate initials (e.g., "Aman" -> "AM", "Aman Kumar" -> "AK")
+  // 4. Generate initials dynamically
   const parts = displayName.split(' ').filter(p => p.length > 0);
   let initials = 'US';
   if (parts.length >= 2) {
@@ -54,18 +60,18 @@ function handleLogin(e) {
     initials = parts[0].slice(0, 2).toUpperCase();
   }
 
-  // 5. Dynamically update top-right corner header
+  // 5. Update UI header
   const userNameEl = document.getElementById('user-name');
   const userAvatarEl = document.getElementById('user-avatar');
 
   if (userNameEl) userNameEl.innerText = displayName;
   if (userAvatarEl) userAvatarEl.innerText = initials;
 
-  // 6. Save to localStorage to persist state across refreshes
+  // 6. Persist session
   localStorage.setItem('sharms_user_name', displayName);
   localStorage.setItem('sharms_user_initials', initials);
 
-  // 7. Hide login view & show system view
+  // 7. Toggle view visibility
   document.getElementById('login-view').classList.add('hidden');
   document.getElementById('system-view').classList.remove('hidden');
 
@@ -76,8 +82,8 @@ function handleLogin(e) {
     chartsInitialized = true;
   }
 
-  // 9. Add audit log entry
-  addLog('Admin Auth', 'INFO', `User ${displayName} authenticated successfully.`);
+  // 9. Add system audit log
+  addLog('Admin Auth', 'INFO', `User ${displayName} (${emailValue}) authenticated successfully.`);
 }
 
 function handleLogout() {
