@@ -10,22 +10,42 @@ let devices = [
 let currentFilter = 'ALL';
 let chartsInitialized = false;
 
+// AUTO-LOAD SAVED SESSION ON PAGE LOAD
+window.addEventListener('DOMContentLoaded', () => {
+  const savedName = localStorage.getItem('sharms_user_name');
+  const savedInitials = localStorage.getItem('sharms_user_initials');
+
+  if (savedName) {
+    const userNameEl = document.getElementById('user-name');
+    if (userNameEl) userNameEl.innerText = savedName;
+  }
+  
+  if (savedInitials) {
+    const userAvatarEl = document.getElementById('user-avatar');
+    if (userAvatarEl) userAvatarEl.innerText = savedInitials;
+  }
+});
+
+// AUTHENTICATION FLOW
 // AUTHENTICATION FLOW
 function handleLogin(e) {
   e.preventDefault();
 
-  // 1. Get the typed name/email from the login input
+  // 1. Get the typed input
   const inputEl = document.getElementById('login-email') || document.getElementById('login-username') || document.getElementById('login-fullname');
-  const typedValue = inputEl ? inputEl.value.trim() : 'User';
+  const typedValue = inputEl ? inputEl.value.trim() : '';
 
-  // 2. Format name (if user enters "aman@sharms.local", extract "Aman")
-  let displayName = typedValue;
-  if (typedValue.includes('@')) {
-    displayName = typedValue.split('@')[0];
-    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+  // 2. Validate that it ends strictly with @sharms.local
+  if (!typedValue.toLowerCase().endsWith('@sharms.local')) {
+    alert('Access Denied: Username must end with @sharms.local (e.g. aman@sharms.local)');
+    return; // Stop login process
   }
 
-  // 3. Generate initials (e.g., "Aman" -> "AM", "Aman Kumar" -> "AK")
+  // 3. Extract display name (e.g., "aman@sharms.local" -> "Aman")
+  let displayName = typedValue.split('@')[0];
+  displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
+  // 4. Generate initials (e.g., "Aman" -> "AM", "Aman Kumar" -> "AK")
   const parts = displayName.split(' ').filter(p => p.length > 0);
   let initials = 'US';
   if (parts.length >= 2) {
@@ -34,29 +54,37 @@ function handleLogin(e) {
     initials = parts[0].slice(0, 2).toUpperCase();
   }
 
-  // 4. Dynamically update top-right corner header
+  // 5. Dynamically update top-right corner header
   const userNameEl = document.getElementById('user-name');
   const userAvatarEl = document.getElementById('user-avatar');
 
   if (userNameEl) userNameEl.innerText = displayName;
   if (userAvatarEl) userAvatarEl.innerText = initials;
 
-  // 5. Hide login view & show system view
+  // 6. Save to localStorage to persist state across refreshes
+  localStorage.setItem('sharms_user_name', displayName);
+  localStorage.setItem('sharms_user_initials', initials);
+
+  // 7. Hide login view & show system view
   document.getElementById('login-view').classList.add('hidden');
   document.getElementById('system-view').classList.remove('hidden');
 
-  // 6. Render devices & initialize charts
+  // 8. Render devices & initialize charts
   renderDevices();
   if (!chartsInitialized) {
     initCharts();
     chartsInitialized = true;
   }
 
-  // 7. Add audit log entry
+  // 9. Add audit log entry
   addLog('Admin Auth', 'INFO', `User ${displayName} authenticated successfully.`);
 }
 
 function handleLogout() {
+  // Clear persistent session storage on logout
+  localStorage.removeItem('sharms_user_name');
+  localStorage.removeItem('sharms_user_initials');
+
   document.getElementById('system-view').classList.add('hidden');
   document.getElementById('login-view').classList.remove('hidden');
 }

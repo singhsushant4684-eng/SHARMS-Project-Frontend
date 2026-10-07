@@ -96,13 +96,27 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.85;
+  opacity: 1S;
   transition: transform 0.6s ease;
   z-index: 0;
 }
 
+.auth-hero {
+  position: relative;
+  overflow: hidden;
+  background: transparent; /* Prevent dark container background bleed */
+}
+
 .auth-hero:hover .hero-img {
   transform: scale(1.05);
+}
+
+.auth-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%);
+  pointer-events: none;
 }
 
 .hero-overlay {
@@ -260,9 +274,13 @@ body {
 .input-icon {
   position: absolute;
   left: 0.85rem;
-  font-size: 0.9rem;
+  color: #64748b;
   pointer-events: none;
-  opacity: 0.6;
+  transition: color 0.2s ease;
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: #6366f1;
 }
 
 .form-input.with-icon {

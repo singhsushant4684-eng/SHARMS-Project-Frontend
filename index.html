@@ -54,42 +54,51 @@
         </div>
 
         <form onsubmit="handleLogin(event)" class="auth-form" autocomplete="off">
-        <div class="form-group">
-          <label for="login-fullname">Full Name</label>
-          <div class="input-wrapper">
-            <span class="input-icon">👤</span>
-            <input type="text" id="login-fullname" class="form-input with-icon" placeholder="e.g. Sushant Singh" required autocomplete="off">
+          <div class="form-group">
+            <label for="login-fullname">Full Name</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input type="text" id="login-fullname" class="form-input with-icon" placeholder="e.g. Sushant Singh" required autocomplete="off" />
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="login-email">Username or Email</label>
-          <div class="input-wrapper">
-            <span class="input-icon">📧</span>
-            <input type="text" id="login-email" class="form-input with-icon" placeholder="admin@sharms.local" required autocomplete="off">
+          <div class="form-group">
+            <label for="login-email">Username or Email</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input type="text" id="login-email" class="form-input with-icon" placeholder="admin@sharms.local" required autocomplete="off" />
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="login-password" class="form-input with-icon" placeholder="••••••••" required autocomplete="new-password">
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="login-password" class="form-input with-icon" placeholder="••••••••" required autocomplete="off" />
+            </div>
           </div>
-        </div>
 
-        <div class="form-options">
-          <label class="checkbox-label">
-            <input type="checkbox" checked> Remember session
-          </label>
-          <a href="#" onclick="alert('Demo Mode: Click Authenticate & Access System to enter.')" class="forgot-link">Forgot key?</a>
-        </div>
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" checked> Remember session
+            </label>
+            <a href="#" onclick="alert('Demo Mode: Click Authenticate & Access System to enter.')" class="forgot-link">Forgot key?</a>
+          </div>
 
-        <button type="submit" class="btn-primary auth-btn">
-          <span>Authenticate & Access System</span>
-          <span class="btn-arrow">→</span>
-        </button>
-      </form>
+          <button type="submit" class="btn-primary auth-btn">
+            <span>Authenticate & Access System</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </form>
         </div>
       </div>
     </div>
