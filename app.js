@@ -112,25 +112,49 @@ function renderDevices() {
     const card = document.createElement('div');
     card.className = `card ${dev.status === 'OFFLINE' ? 'offline' : ''}`;
 
+    // Inside renderDevices() loop:
+const isOnline = dev.status === 'ONLINE';
     let controlsHTML = '';
-    if (dev.type === 'LIGHT') {
+
+    if (dev.type === 'LIGHT' || dev.type === 'PLUG' || dev.type === 'OTHER') {
       controlsHTML = `
-        <button onclick="togglePower('${dev.id}')" class="toggle-btn ${dev.isPoweredOn ? 'on' : ''}">
-          Power: ${dev.isPoweredOn ? 'ON' : 'OFF'}
+        <button 
+          onclick="togglePower('${dev.id}')" 
+          class="toggle-btn ${dev.isPoweredOn && isOnline ? 'on' : ''}" 
+          ${!isOnline ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+          Power: ${dev.isPoweredOn && isOnline ? 'ON' : 'OFF'}
         </button>
       `;
     } else if (dev.type === 'THERMOSTAT') {
       controlsHTML = `
-        <div class="temp-controls">
-          <button onclick="adjustTemp('${dev.id}', -1)" class="temp-btn">-</button>
+        <div class="temp-controls" style="${!isOnline ? 'opacity: 0.5; pointer-events: none;' : ''}">
+          <button onclick="adjustTemp('${dev.id}', -1)" class="temp-btn" ${!isOnline ? 'disabled' : ''}>-</button>
           <span class="temp-val">${dev.targetTemp}°C</span>
-          <button onclick="adjustTemp('${dev.id}', 1)" class="temp-btn">+</button>
+          <button onclick="adjustTemp('${dev.id}', 1)" class="temp-btn" ${!isOnline ? 'disabled' : ''}>+</button>
         </div>
       `;
     } else if (dev.type === 'LOCK') {
       controlsHTML = `
-        <button onclick="toggleLock('${dev.id}')" class="toggle-btn ${dev.isLocked ? 'on' : ''}">
+        <button 
+          onclick="toggleLock('${dev.id}')" 
+          class="toggle-btn ${dev.isLocked && isOnline ? 'on' : ''}" 
+          ${!isOnline ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
           State: ${dev.isLocked ? 'LOCKED' : 'UNLOCKED'}
+        </button>
+      `;
+    } else if (dev.type === 'SENSOR') {
+      controlsHTML = `
+        <div class="toggle-btn ${dev.isPoweredOn && isOnline ? 'on' : ''}" style="text-align: center; cursor: default; ${!isOnline ? 'opacity: 0.5;' : ''}">
+          Status: ${isOnline ? (dev.isPoweredOn ? 'ARMED / ACTIVE' : 'STANDBY') : 'DISCONNECTED'}
+        </div>
+      `;
+    } else if (dev.type === 'CAMERA') {
+      controlsHTML = `
+        <button 
+          onclick="togglePower('${dev.id}')" 
+          class="toggle-btn ${dev.isPoweredOn && isOnline ? 'on' : ''}" 
+          ${!isOnline ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+          Feed: ${isOnline && dev.isPoweredOn ? 'STREAMING' : 'OFFLINE'}
         </button>
       `;
     }
@@ -139,7 +163,7 @@ function renderDevices() {
       <div>
         <div class="card-top">
           <span class="room-tag">${dev.room}</span>
-          <span class="status ${dev.status}">● ${dev.status}</span>
+          <span onclick="toggleStatus('${dev.id}')" class="status ${dev.status}" style="cursor: pointer;" title="Click to toggle status">● ${dev.status}</span>
         </div>
         <h3 class="card-title">${dev.name}</h3>
       </div>
@@ -153,11 +177,21 @@ function renderDevices() {
     grid.appendChild(card);
   });
 
-  // Update online count metric
+  // Dynamic Device Count & Operational Percentage Calculation
+  const totalCount = devices.length;
   const onlineCount = devices.filter(d => d.status === 'ONLINE').length;
+  const percentage = totalCount > 0 ? Math.round((onlineCount / totalCount) * 100) : 0;
+
+  // Update KPI Card Numbers (e.g. "5 / 5" or "4 / 5")
   const statElement = document.getElementById('stat-active');
   if (statElement) {
-    statElement.innerText = `${onlineCount} / ${devices.length}`;
+    statElement.innerText = `${onlineCount} / ${totalCount}`;
+  }
+
+  // Update Operational Percentage Subtext (e.g. "● 100% Operational" or "● 80% Operational")
+  const operationalElement = document.getElementById('stat-operational');
+  if (operationalElement) {
+    operationalElement.innerText = `● ${percentage}% Operational`;
   }
 }
 
@@ -167,6 +201,21 @@ function togglePower(id) {
   if (!dev || dev.status === 'OFFLINE') return;
   dev.isPoweredOn = !dev.isPoweredOn;
   addLog(dev.name, 'INFO', `Power toggled to ${dev.isPoweredOn ? 'ON' : 'OFF'}`);
+  renderDevices();
+}
+
+function toggleStatus(id) {
+  const dev = devices.find(d => d.id === id);
+  if (!dev) return;
+
+  dev.status = dev.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
+  
+  addLog(
+    dev.name, 
+    dev.status === 'OFFLINE' ? 'WARNING' : 'INFO', 
+    `Device connection state toggled to ${dev.status}`
+  );
+
   renderDevices();
 }
 
@@ -195,14 +244,37 @@ function removeDevice(id) {
 
 function handleRegisterDevice(e) {
   e.preventDefault();
-  const name = document.getElementById('reg-name').value;
+  const nameInput = document.getElementById('reg-name');
+  const name = nameInput.value.trim();
   const type = document.getElementById('reg-type').value;
   const room = document.getElementById('reg-room').value;
 
-  const newId = 'dev-' + (devices.length + 1);
-  devices.push({ id: newId, name, type, room, status: 'ONLINE', isPoweredOn: true, targetTemp: 22, isLocked: true });
+  // 1. Check for duplicate names in the same room
+  const duplicate = devices.find(d => 
+    d.name.toLowerCase() === name.toLowerCase() && d.room.toLowerCase() === room.toLowerCase()
+  );
 
-  addLog(name, 'INFO', `New device registered and linked to ${room}`);
+  if (duplicate) {
+    alert(`A device named "${name}" already exists in ${room}. Please assign a unique name (e.g. "${name} 2").`);
+    nameInput.focus();
+    return;
+  }
+
+  // 2. Generate unique ID using timestamp or max index to avoid collisions after deletion
+  const newId = 'dev-' + (Date.now().toString().slice(-4));
+
+  devices.push({ 
+    id: newId, 
+    name, 
+    type, 
+    room, 
+    status: 'ONLINE', 
+    isPoweredOn: true, 
+    targetTemp: 22, 
+    isLocked: true 
+  });
+
+  addLog(name, 'INFO', `New ${type} registered as "${name}" in ${room}`);
   closeModal();
   renderDevices();
 }
@@ -266,6 +338,12 @@ function initCharts() {
   const dashCanvas = document.getElementById('dashboardChart');
   if (dashCanvas) {
     const ctxDash = dashCanvas.getContext('2d');
+    
+    // Create soft gradient fill under the telemetry line
+    const gradient = ctxDash.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+    gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
     new Chart(ctxDash, {
       type: 'line',
       data: {
@@ -274,17 +352,22 @@ function initCharts() {
           label: 'Power Demand (kW)',
           data: [1.1, 1.3, 1.8, 1.5, 1.2, 1.45],
           borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.15)',
+          borderWidth: 2,
+          backgroundColor: gradient,
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          pointBackgroundColor: '#818cf8',
+          pointRadius: 4
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { labels: { color: '#94a3b8' } } },
+        plugins: { 
+          legend: { display: false } // Hidden for a clean modern dashboard card header
+        },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+          x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255, 255, 255, 0.03)' } },
+          y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255, 255, 255, 0.03)' } }
         }
       }
     });
