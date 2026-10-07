@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHARMS - Smart Home Gateway</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- LOGIN PORTAL PAGE -->
+  <div id="login-view" class="auth-wrapper">
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-grid"></div>
+
+    <div class="auth-container">
+      <!-- LEFT HERO / VISUAL PANEL -->
+      <div class="auth-hero">
+        <div class="hero-overlay"></div>
+        <img src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80" alt="Smart Home Gateway" class="hero-img">
+        
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span> Core System Active
+          </div>
+          <h1 class="hero-title">Next-Gen Home Intelligence</h1>
+          <p class="hero-desc">Monitor energy consumption, automate smart nodes, and manage whole-house security in real time.</p>
+          
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <span class="stat-num">99.9%</span>
+              <span class="stat-lbl">Uptime</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="stat-num">&lt; 12ms</span>
+              <span class="stat-lbl">Latency</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="stat-num">256-bit</span>
+              <span class="stat-lbl">Security</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM PANEL -->
+      <div class="auth-card">
+        <div class="auth-header">
+          <img src="logo.jpeg" alt="SHARMS Logo" class="auth-logo">
+          <h2>SHARMS Portal</h2>
+          <p>Smart Home Automation & Resource Management System</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Username or Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input type="text" id="login-email" class="form-input with-icon" placeholder="admin@sharms.local" required value="admin@sharms.local">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="login-password" class="form-input with-icon" placeholder="••••••••" required value="password123">
+            </div>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-label">
+              <input type="checkbox" checked> Remember session
+            </label>
+            <a href="#" onclick="alert('Demo Mode: Click Authenticate & Access System to enter.')" class="forgot-link">Forgot key?</a>
+          </div>
+
+          <button type="submit" class="btn-primary auth-btn">
+            <span>Authenticate & Access System</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <span><span class="status-dot green"></span> Encrypted Core</span>
+          <span>v2.4 Node</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN SHARMS SYSTEM (HIDDEN UNTIL LOGIN) -->
+  <div id="system-view" class="hidden">
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="logo.jpeg" alt="SHARMS Logo" class="brand-logo">
+        <div>
+          <h1 class="brand-title">SHARMS</h1>
+          <p class="brand-sub">Smart Home Automation & Resource Management System</p>
+        </div>
+      </div>
+      <div class="user-badge">
+        <div class="avatar">SS</div>
+        <div>
+          <div class="user-name">Sushant Singh</div>
+          <div class="user-role">System Administrator</div>
+        </div>
+        <button onclick="handleLogout()" class="logout-btn" title="Log Out">🚪</button>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <!-- NAVIGATION SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-label">Navigation</div>
+        <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn active">📊 System Overview</button>
+        <button id="nav-devices" onclick="switchTab('devices')" class="nav-btn">🔌 Device Control</button>
+        <button id="nav-resources" onclick="switchTab('resources')" class="nav-btn">📈 Resource Usage</button>
+        <button id="nav-alerts" onclick="switchTab('alerts')" class="nav-btn">🚨 System Logs</button>
+      </aside>
+
+      <!-- MAIN CONTENT CONTAINER -->
+      <main class="content">
+
+        <!-- VIEW 1: DASHBOARD OVERVIEW -->
+        <section id="view-dashboard">
+          <div class="section-header">
+            <div>
+              <h2>Dashboard Overview</h2>
+              <p>Real-time node status and active resource consumption.</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary">+ Register Device</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Active Devices</span>
+              <span id="stat-active" class="stat-value">4 / 5</span>
+              <span class="stat-sub">● 80% Operational</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Current Load</span>
+              <span class="stat-value">1.45 kW</span>
+              <span class="stat-sub">▼ 12% vs peak load</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Monthly Estimate</span>
+              <span class="stat-value">₹ 1,840</span>
+              <span class="stat-sub">Optimized via EcoMode</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">System Security</span>
+              <span class="stat-value" style="color: #34d399;">LOCKED</span>
+              <span class="stat-sub">All access points secure</span>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Real-time Energy Telemetry</h3>
+            <canvas id="dashboardChart" height="90"></canvas>
+          </div>
+        </section>
+
+        <!-- VIEW 2: DEVICE CONTROL -->
+        <section id="view-devices" class="hidden">
+          <div class="section-header">
+            <div>
+              <h2>Device Management</h2>
+              <p>Control, monitor, and configure connected hardware nodes.</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary">+ Register Device</button>
+          </div>
+
+          <div class="room-filters">
+            <button id="filter-ALL" onclick="filterDevices('ALL')" class="room-btn active">All Rooms</button>
+            <button id="filter-Living Room" onclick="filterDevices('Living Room')" class="room-btn">Living Room</button>
+            <button id="filter-Bedroom" onclick="filterDevices('Bedroom')" class="room-btn">Bedroom</button>
+            <button id="filter-Entrance" onclick="filterDevices('Entrance')" class="room-btn">Entrance</button>
+            <button id="filter-Kitchen" onclick="filterDevices('Kitchen')" class="room-btn">Kitchen</button>
+          </div>
+
+          <div id="device-grid" class="grid"></div>
+        </section>
+
+        <!-- VIEW 3: RESOURCE USAGE -->
+        <section id="view-resources" class="hidden">
+          <div class="section-header">
+            <div>
+              <h2>Resource Management</h2>
+              <p>Breakdown of weekly power consumption by room.</p>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Weekly Consumption (kWh)</h3>
+            <canvas id="energyChart" height="100"></canvas>
+          </div>
+        </section>
+
+        <!-- VIEW 4: SYSTEM LOGS -->
+        <section id="view-alerts" class="hidden">
+          <div class="section-header">
+            <div>
+              <h2>System Audit Trail</h2>
+              <p>Historical operational logs and anomaly triggers.</p>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Source Entity</th>
+                  <th>Severity</th>
+                  <th>Log Message</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body">
+                <tr>
+                  <td>14:32:01</td>
+                  <td>System Gateway</td>
+                  <td><span class="badge badge-info">INFO</span></td>
+                  <td>SHARMS core initialization successful.</td>
+                </tr>
+                <tr>
+                  <td>14:30:12</td>
+                  <td>Kitchen Leak Sensor</td>
+                  <td><span class="badge badge-alert">CRITICAL</span></td>
+                  <td>Node went OFFLINE. Connection timeout.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- REGISTRATION MODAL -->
+    <div id="register-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 style="font-weight: 700;">Register New Node</h3>
+          <button onclick="closeModal()" class="close-btn">&times;</button>
+        </div>
+        <form onsubmit="handleRegisterDevice(event)">
+          <div class="form-group">
+            <label for="reg-name">Device Name</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Smart Plug" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-type">Type</label>
+            <select id="reg-type" class="form-input" style="background: #0f172a; color: white;">
+              <option value="LIGHT">Lighting Control</option>
+              <option value="THERMOSTAT">Climate Thermostat</option>
+              <option value="LOCK">Smart Lock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-room">Room Allocation</label>
+            <select id="reg-room" class="form-input" style="background: #0f172a; color: white;">
+              <option value="Living Room">Living Room</option>
+              <option value="Bedroom">Bedroom</option>
+              <option value="Entrance">Entrance</option>
+              <option value="Kitchen">Kitchen</option>
+            </select>
+          </div>
+          <div class="modal-actions">
+            <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Link Device</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
