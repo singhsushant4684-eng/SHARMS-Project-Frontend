@@ -375,41 +375,70 @@
     </section>
 
         <!-- VIEW 4: SYSTEM LOGS -->
-        <section id="view-alerts" class="hidden">
-          <div class="section-header">
-            <div>
-              <h2>System Audit Trail</h2>
-              <p>Historical operational logs and anomaly triggers.</p>
-            </div>
-          </div>
+    <section id="view-alerts" class="hidden">
+      <div class="section-header">
+        <div>
+          <h2>System Audit Trail</h2>
+          <p>Historical operational logs, security events, and real-time anomaly triggers.</p>
+        </div>
+      </div>
 
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>Source Entity</th>
-                  <th>Severity</th>
-                  <th>Log Message</th>
-                </tr>
-              </thead>
-              <tbody id="logs-table-body">
-                <tr>
-                  <td>14:32:01</td>
-                  <td>System Gateway</td>
-                  <td><span class="badge badge-info">INFO</span></td>
-                  <td>SHARMS core initialization successful.</td>
-                </tr>
-                <tr>
-                  <td>14:30:12</td>
-                  <td>Kitchen Leak Sensor</td>
-                  <td><span class="badge badge-alert">CRITICAL</span></td>
-                  <td>Node went OFFLINE. Connection timeout.</td>
-                </tr>
-              </tbody>
-            </table>
+      <!-- Logs Glass Card -->
+      <div class="logs-card">
+        <!-- Control Bar -->
+        <div class="logs-toolbar">
+          <div class="search-box">
+            <input type="text" id="logSearch" placeholder="Search logs by entity or message..." onkeyup="filterLogs()">
           </div>
-        </section>
+          <div class="severity-filters">
+            <button type="button" class="log-filter-btn active" onclick="filterSeverity('ALL')">All</button>
+            <button type="button" class="log-filter-btn" onclick="filterSeverity('INFO')">Info</button>
+            <button type="button" class="log-filter-btn" onclick="filterSeverity('WARN')">Warning</button>
+            <button type="button" class="log-filter-btn" onclick="filterSeverity('CRITICAL')">Critical</button>
+          </div>
+        </div>
+
+        <!-- Audit Table -->
+        <div class="table-responsive">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Source Entity</th>
+                <th>Severity</th>
+                <th>Log Message</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body">
+              <tr>
+                <td class="mono-time">16:28:33</td>
+                <td><span class="entity-badge">Admin Auth</span></td>
+                <td><span class="badge-sev info">INFO</span></td>
+                <td>User admin (admin@sharms.local) authenticated successfully.</td>
+              </tr>
+              <tr>
+                <td class="mono-time">14:32:01</td>
+                <td><span class="entity-badge">System Gateway</span></td>
+                <td><span class="badge-sev info">INFO</span></td>
+                <td>SHARMS core initialization successful.</td>
+              </tr>
+              <tr>
+                <td class="mono-time">14:30:12</td>
+                <td><span class="entity-badge">Kitchen Leak Sensor</span></td>
+                <td><span class="badge-sev critical">CRITICAL</span></td>
+                <td>Node went OFFLINE. Connection timeout.</td>
+              </tr>
+              <tr>
+                <td class="mono-time">12:15:44</td>
+                <td><span class="entity-badge">Living Room Thermostat</span></td>
+                <td><span class="badge-sev warn">WARN</span></td>
+                <td>Temperature threshold exceeded setpoint by 3.2°C.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
       </main>
     </div>

@@ -78,11 +78,15 @@ function handleLogin(e) {
   // 8. Render devices & initialize charts
   renderDevices();
   if (!chartsInitialized) {
-    initCharts();
-    chartsInitialized = true;
+    try {
+      initCharts();
+      chartsInitialized = true;
+    } catch (e) {
+      console.error('Chart init error safely caught:', e);
+    }
   }
 
-  // 9. Add system audit log
+  // 9. Add formatted system audit log entry
   addLog('Admin Auth', 'INFO', `User ${displayName} (${emailValue}) authenticated successfully.`);
 }
 
@@ -308,16 +312,14 @@ function addLog(deviceName, severity, message) {
   if (!tbody) return;
   const now = new Date();
   const timeStr = now.toTimeString().split(' ')[0];
-  
-  let badgeClass = 'badge-info';
-  if (severity === 'WARNING') badgeClass = 'badge-warn';
-  if (severity === 'CRITICAL') badgeClass = 'badge-alert';
+
+  const severityClass = severity.toLowerCase();
 
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td>${timeStr}</td>
-    <td>${deviceName}</td>
-    <td><span class="badge ${badgeClass}">${severity}</span></td>
+    <td class="mono-time">${timeStr}</td>
+    <td><span class="entity-badge">${deviceName}</span></td>
+    <td><span class="badge-sev ${severityClass}">${severity.toUpperCase()}</span></td>
     <td>${message}</td>
   `;
   tbody.prepend(tr);
@@ -433,7 +435,10 @@ function initCharts() {
             position: 'top',
             labels: {
               color: '#94a3b8',
-              font: { family: 'Inter', size: 12 },
+              font: { 
+                family: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+                size: 13 
+              },
               usePointStyle: true,
               padding: 16
             }
@@ -460,4 +465,35 @@ function initCharts() {
       }
     });
   }
+}
+
+// REAL-TIME SYSTEM LOG SEARCH & FILTERING
+function filterLogs() {
+  const query = document.getElementById('logSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('#logs-table-body tr');
+
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(query) ? '' : 'none';
+  });
+}
+
+function filterSeverity(sev) {
+  const buttons = document.querySelectorAll('.log-filter-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  if (event && event.target) {
+    event.target.classList.add('active');
+  }
+
+  const rows = document.querySelectorAll('#logs-table-body tr');
+  rows.forEach(row => {
+    if (sev === 'ALL') {
+      row.style.display = '';
+    } else {
+      const badge = row.querySelector('.badge-sev');
+      const isMatch = badge && badge.innerText.trim().toUpperCase() === sev;
+      row.style.display = isMatch ? '' : 'none';
+    }
+  });
 }
