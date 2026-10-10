@@ -587,3 +587,97 @@ async function updateDeviceOnBackend(id, updates) {
     console.error('Error communicating with backend server:', error);
   }
 }
+
+// --- Three.js 3D Background Animation ---
+const canvas = document.getElementById('bg-3d-canvas');
+if (canvas) {
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Create a futuristic wireframe shape (Torus knot or Torus)
+  const geometry = new THREE.TorusKnotGeometry(3.5, 1, 100, 16);
+  const material = new THREE.MeshBasicMaterial({ 
+    color: 0x00d2ff, 
+    wireframe: true,
+    transparent: true,
+    opacity: 0.25 // Subtle ambient background effect
+  });
+  
+  const wireframeMesh = new THREE.Mesh(geometry, material);
+  scene.add(wireframeMesh);
+
+  camera.position.z = 9;
+
+  // Mouse movement interaction parallax effect
+  let mouseX = 0;
+  let mouseY = 0;
+  document.addEventListener('mousemove', (event) => {
+    mouseX = (event.clientX / window.innerWidth) - 0.5;
+    mouseY = (event.clientY / window.innerHeight) - 0.5;
+  });
+
+  // Animation Loop
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Auto-rotate shape smoothly
+    wireframeMesh.rotation.x += 0.002;
+    wireframeMesh.rotation.y += 0.004;
+
+    // Gentle parallax response to mouse movement
+    wireframeMesh.position.x += (mouseX * 2 - wireframeMesh.position.x) * 0.05;
+    wireframeMesh.position.y += (-mouseY * 2 - wireframeMesh.position.y) * 0.05;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Responsive window resize handling
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+/* --- Header 3D Mini Globe Renderer --- */
+document.addEventListener('DOMContentLoaded', () => {
+  const globeCanvas = document.getElementById('header-3d-globe');
+  if (globeCanvas) {
+    const globeScene = new THREE.Scene();
+    const globeCamera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+    const globeRenderer = new THREE.WebGLRenderer({ canvas: globeCanvas, alpha: true, antialias: true });
+
+    globeRenderer.setSize(60, 60);
+    globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Icosahedron wireframe for a high-tech node core look
+    const globeGeometry = new THREE.IcosahedronGeometry(1.8, 2);
+    const globeMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0x00d2ff, 
+      wireframe: true,
+      transparent: true,
+      opacity: 0.75
+    });
+    
+    const globeMesh = new THREE.Mesh(globeGeometry, globeMaterial);
+    globeScene.add(globeMesh);
+
+    globeCamera.position.z = 4.5;
+
+    function animateGlobe() {
+      requestAnimationFrame(animateGlobe);
+
+      globeMesh.rotation.x += 0.005;
+      globeMesh.rotation.y += 0.008;
+
+      globeRenderer.render(globeScene, globeCamera);
+    }
+    animateGlobe();
+  }
+});
+

@@ -6,11 +6,27 @@
   <title>SHARMS - Smart Home Gateway</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
   <!-- LOGIN PORTAL PAGE -->
   <div id="login-view" class="auth-wrapper">
+
+    <canvas id="bg-3d-canvas"></canvas>
+
+    <div class="background-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+    <div class="bg-cyber-3d">
+      <div class="cyber-orb orb-1"></div>
+      <div class="cyber-orb orb-2"></div>
+    </div>
+    
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
     <div class="bg-grid"></div>
@@ -182,13 +198,18 @@
 
         <!-- VIEW 1: DASHBOARD OVERVIEW -->
         <section id="view-dashboard" class="dashboard-view">
-          <div class="section-header">
-            <div>
-              <h2>Dashboard Overview</h2>
-              <p>Real-time node status and active resource consumption.</p>
-            </div>
-            <button onclick="openModal()" class="btn-primary">+ Register Device</button>
-          </div>
+  <div class="section-header">
+    <div class="header-title-wrapper" style="display: flex; align-items: center; gap: 18px;">
+      <!-- MINI 3D NODE GLOBE ON THE LEFT -->
+      <canvas id="header-3d-globe" width="60" height="60" style="display: block;"></canvas>
+      
+      <div>
+        <h2>Dashboard Overview</h2>
+        <p>Real-time node status and active resource consumption.</p>
+      </div>
+    </div>
+    <button onclick="openModal()" class="btn-primary">+ Register Device</button>
+  </div>
 
           <!-- Top KPI Grid -->
           <div class="kpi-grid">

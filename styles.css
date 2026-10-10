@@ -1545,3 +1545,254 @@ section.active,
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
+/* --- Lightweight 3D Cyber Background Effect --- */
+.bg-cyber-3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cyber-orb {
+  position: absolute;
+  border-fois: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  width: 350px;
+  height: 350px;
+  background: #00d2ff;
+  top: 15%;
+  left: 20%;
+}
+
+.orb-2 {
+  width: 450px;
+  height: 450px;
+  background: #3a7bd5;
+  bottom: 10%;
+  right: 15%;
+  animation-delay: -4s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(40px, -50px) scale(1.15);
+  }
+}
+
+/* Ensure card sits above background */
+.auth-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 3D Wireframe Canvas Background --- */
+#bg-3d-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none; /* Allows mouse clicks to pass straight through to the form */
+}
+
+/* Ensure your card sits above the 3D canvas */
+.auth-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Full Screen Background Canvas --- */
+#bg-3d-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* Sits at the absolute back */
+  pointer-events: none;
+}
+
+/* --- Center Login Card (The Shield) --- */
+.auth-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container {
+  position: relative;
+  z-index: 2;
+  /* Make sure this background is fully solid/opaque so it blocks the background wireframe underneath */
+  background: #0f172a !important; /* Adjust to match your exact dark theme color hex */
+  backdrop-filter: none !important; /* Removes transparency so nothing peeks through from behind */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* --- Cohesive Cyber/IoT Background Orbs --- */
+.background-orbs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1; /* Keeps it strictly in the background */
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px); /* Softer, ambient glow */
+  opacity: 0.35;
+  animation: floatOrb 16s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  width: 260px;
+  height: 260px;
+  background: #00d2ff; /* Bright Cyan */
+  top: 10%;
+  left: 8%;
+}
+
+.orb-2 {
+  width: 300px;
+  height: 300px;
+  background: #0284c7; /* Deep Tech Blue */
+  bottom: 10%;
+  right: 10%;
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+.orb-3 {
+  width: 200px;
+  height: 200px;
+  background: #38bdf8; /* Light Sky Blue */
+  bottom: 20%;
+  left: 12%;
+  animation-delay: -3s;
+  animation-duration: 14s;
+}
+
+.orb-4 {
+  width: 220px;
+  height: 220px;
+  background: #0f172a; /* Dark slate shadow contrast */
+  top: 15%;
+  right: 15%;
+  animation-delay: -8s;
+  animation-duration: 18s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50px, -60px) scale(1.12);
+  }
+}
+
+/* Ensure your center login card has a solid background so it blocks out the orbs underneath */
+.auth-container {
+  background: #0f172a !important;
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Input Field Focus Glow --- */
+.auth-container input:focus,
+.auth-container select:focus,
+.auth-container textarea:focus {
+  border-color: #00d2ff !important;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.35) !important;
+  outline: none;
+  background-color: rgba(15, 23, 42, 0.85) !important;
+}
+
+/* --- Authenticate Button Smooth Hover Glow --- */
+.auth-container button[type="submit"],
+.auth-container .auth-btn {
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container button[type="submit"]:hover,
+.auth-container .auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
+}
+
+/* --- Header 3D Mini Globe Widget --- */
+#header-3d-globe {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
+}
+
+/* --- Compact & Streamlined Header Styles --- */
+header, .top-header, .navbar {
+  padding: 10px 24px !important;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Make logo and title compact */
+.header-brand, .logo-container, .brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-brand img, .logo-container img {
+  height: 36px;
+  width: auto;
+}
+
+.header-brand h1, .brand-title {
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.header-brand p, .brand-subtitle {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Center user profile vertically with the brand */
+.user-profile, .profile-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(0, 210, 255, 0.15);
+  border-radius: 30px;
+}
+
