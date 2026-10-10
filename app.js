@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://127.0.0.1:5000/api';
+
 // CORE SYSTEM STATE
 let devices = [
   { id: 'dev-1', name: 'Main Ceiling Light', type: 'LIGHT', room: 'Living Room', status: 'ONLINE', isPoweredOn: true },
@@ -27,7 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // AUTHENTICATION FLOW
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
 
   // 1. Explicitly target the email/username input
@@ -44,14 +46,43 @@ function handleLogin(e) {
     return; // Block login execution
   }
 
-  // 3. Determine display name (prefer Full Name input if filled, otherwise extract from email)
+  // Extract username prefix (e.g., "admin" from "admin@sharms.local") for backend check
+  const usernamePrefix = emailValue.split('@')[0];
+  const passwordInput = document.getElementById('login-password'); // Ensure you have a password field or prompt
+  const passwordValue = passwordInput ? passwordInput.value : 'admin123'; // fallback for mock test
+
+  try {
+    // 3. Authenticate against your Node.js/Express backend
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: usernamePrefix, password: passwordValue })
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || 'Backend authentication failed.');
+      return;
+    }
+
+    // Save JWT token returned from backend
+    localStorage.setItem('sharms_token', data.token);
+
+  } catch (error) {
+    console.error('Server connection error:', error);
+    alert('Could not connect to the SHARMS backend server on port 5000.');
+    return;
+  }
+
+  // 4. Determine display name (prefer Full Name input if filled, otherwise extract from email)
   let displayName = fullNameValue;
   if (!displayName) {
     let rawName = emailValue.split('@')[0];
     displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
   }
 
-  // 4. Generate initials dynamically
+  // 5. Generate initials dynamically
   const parts = displayName.split(' ').filter(p => p.length > 0);
   let initials = 'US';
   if (parts.length >= 2) {
@@ -60,23 +91,23 @@ function handleLogin(e) {
     initials = parts[0].slice(0, 2).toUpperCase();
   }
 
-  // 5. Update UI header
+  // 6. Update UI header
   const userNameEl = document.getElementById('user-name');
   const userAvatarEl = document.getElementById('user-avatar');
 
   if (userNameEl) userNameEl.innerText = displayName;
   if (userAvatarEl) userAvatarEl.innerText = initials;
 
-  // 6. Persist session
+  // 7. Persist session
   localStorage.setItem('sharms_user_name', displayName);
   localStorage.setItem('sharms_user_initials', initials);
 
-  // 7. Toggle view visibility
+  // 8. Toggle view visibility
   document.getElementById('login-view').classList.add('hidden');
   document.getElementById('system-view').classList.remove('hidden');
 
-  // 8. Render devices & initialize charts
-  renderDevices();
+  // 9. Render devices & initialize charts
+  fetchAndRenderDevices();
   if (!chartsInitialized) {
     try {
       initCharts();
@@ -86,7 +117,7 @@ function handleLogin(e) {
     }
   }
 
-  // 9. Add formatted system audit log entry
+  // 10. Add formatted system audit log entry
   addLog('Admin Auth', 'INFO', `User ${displayName} (${emailValue}) authenticated successfully.`);
 }
 
@@ -117,7 +148,7 @@ function renderDevices() {
     card.className = `card ${dev.status === 'OFFLINE' ? 'offline' : ''}`;
 
     // Inside renderDevices() loop:
-const isOnline = dev.status === 'ONLINE';
+   const isOnline = dev.status === 'ONLINE';
     let controlsHTML = '';
 
     if (dev.type === 'LIGHT' || dev.type === 'PLUG' || dev.type === 'OTHER') {
@@ -199,16 +230,34 @@ const isOnline = dev.status === 'ONLINE';
   }
 }
 
+async function fetchAndRenderDevices() {
+  // 1. Render immediately using local default devices so the UI/buttons never disappear on load
+  renderDevices();
+
+  try {
+    // 2. Fetch fresh data from backend in the background
+    const response = await fetch(`${API_BASE_URL}/devices`);
+    const data = await response.json();
+    if (data.success && data.devices && data.devices.length > 0) {
+      devices = data.devices; 
+      renderDevices();       // 3. Re-render with live server data once received
+    }
+  } catch (error) {
+    console.error('Failed to fetch devices from backend:', error);
+  }
+}
+
 // DEVICE OPERATIONS
-function togglePower(id) {
+async function togglePower(id) {
   const dev = devices.find(d => d.id === id);
   if (!dev || dev.status === 'OFFLINE') return;
   dev.isPoweredOn = !dev.isPoweredOn;
   addLog(dev.name, 'INFO', `Power toggled to ${dev.isPoweredOn ? 'ON' : 'OFF'}`);
   renderDevices();
+  await updateDeviceOnBackend(id, { isPoweredOn: dev.isPoweredOn });
 }
 
-function toggleStatus(id) {
+async function toggleStatus(id) {
   const dev = devices.find(d => d.id === id);
   if (!dev) return;
 
@@ -221,22 +270,25 @@ function toggleStatus(id) {
   );
 
   renderDevices();
+  await updateDeviceOnBackend(id, { status: dev.status });
 }
 
-function adjustTemp(id, delta) {
+async function adjustTemp(id, delta) {
   const dev = devices.find(d => d.id === id);
   if (!dev || dev.status === 'OFFLINE') return;
   dev.targetTemp += delta;
   addLog(dev.name, 'INFO', `Target temperature changed to ${dev.targetTemp}°C`);
   renderDevices();
+  await updateDeviceOnBackend(id, { targetTemp: dev.targetTemp });
 }
 
-function toggleLock(id) {
+async function toggleLock(id) {
   const dev = devices.find(d => d.id === id);
   if (!dev || dev.status === 'OFFLINE') return;
   dev.isLocked = !dev.isLocked;
   addLog(dev.name, 'INFO', `Door lock set to ${dev.isLocked ? 'LOCKED' : 'UNLOCKED'}`);
   renderDevices();
+  await updateDeviceOnBackend(id, { isLocked: dev.isLocked });
 }
 
 function removeDevice(id) {
@@ -307,22 +359,41 @@ function switchTab(tab) {
 }
 
 // LOGGING SYSTEM
-function addLog(deviceName, severity, message) {
+// LOGGING SYSTEM (Synced with Backend)
+async function addLog(deviceName, severity, message) {
   const tbody = document.getElementById('logs-table-body');
   if (!tbody) return;
+
   const now = new Date();
   const timeStr = now.toTimeString().split(' ')[0];
-
-  const severityClass = severity.toLowerCase();
+  const severityClass = severity ? severity.toLowerCase() : 'info';
 
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td class="mono-time">${timeStr}</td>
+    <td class="mono-lime">${timeStr}</td>
     <td><span class="entity-badge">${deviceName}</span></td>
     <td><span class="badge-sev ${severityClass}">${severity.toUpperCase()}</span></td>
     <td>${message}</td>
   `;
   tbody.prepend(tr);
+
+  // Send the log data to your Express backend
+  try {
+    await fetch(`${API_BASE_URL}/logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('sharms_token')}`
+      },
+      body: JSON.stringify({
+        title: deviceName,
+        type: severity,
+        message: message
+      })
+    });
+  } catch (error) {
+    console.error('Failed to sync audit log with backend server:', error);
+  }
 }
 
 // MODAL CONTROLS
@@ -496,4 +567,23 @@ function filterSeverity(sev) {
       row.style.display = isMatch ? '' : 'none';
     }
   });
+}
+
+async function updateDeviceOnBackend(id, updates) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/devices/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('sharms_token')}`
+      },
+      body: JSON.stringify(updates)
+    });
+    const data = await response.json();
+    if (!data.success) {
+      console.error('Failed to sync device update to server.');
+    }
+  } catch (error) {
+    console.error('Error communicating with backend server:', error);
+  }
 }
